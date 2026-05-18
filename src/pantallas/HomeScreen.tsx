@@ -82,6 +82,7 @@ export default function HomeScreen({ navigation }: any) {
         Explorar
       </Text>
 
+      {/* BOTÓN PELÍCULAS */}
       <TouchableOpacity
         style={styles.bigButton}
         onPress={() => navigation.navigate('Movies')}
@@ -93,7 +94,11 @@ export default function HomeScreen({ navigation }: any) {
 
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.bigButton}>
+      {/* BOTÓN SERIES */}
+      <TouchableOpacity
+        style={styles.bigButton}
+        onPress={() => navigation.navigate('Series')}
+      >
 
         <Text style={styles.bigButtonText}>
           📺 Ver Series
@@ -132,6 +137,7 @@ const styles = StyleSheet.create({
   categories: {
     flexDirection: 'row',
     marginBottom: 25,
+    flexWrap: 'wrap',
   },
 
   category: {
@@ -140,6 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20,
     marginRight: 10,
+    marginBottom: 10,
   },
 
   categoryText: {

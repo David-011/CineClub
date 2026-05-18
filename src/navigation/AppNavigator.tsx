@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from '../pantallas/HomeScreen'
 import MoviesScreen from '../pantallas/MoviesScreen'
 import MovieDetailScreen from '../pantallas/MovieDetailScreen'
-
+import SeriesScreen from '../pantallas/SeriesScreen'
+import SerieDetailScreen from '../pantallas/SerieDetailScreen'
 const Stack = createNativeStackNavigator()
 
 export default function AppNavigator() {
@@ -30,6 +31,15 @@ export default function AppNavigator() {
           name="Home"
           component={HomeScreen}
           options={{ title: 'CineClub' }}
+        />
+
+        <Stack.Screen
+        name="Series"
+        component={SeriesScreen}
+        />
+        <Stack.Screen
+        name="SerieDetail"
+        component={SerieDetailScreen}
         />
 
         <Stack.Screen
