@@ -1,94 +1,164 @@
-import { View, Text, FlatList, ActivityIndicator, Button, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native'
+
 import { useEffect, useState } from 'react'
+
 import { supabase } from '../servicios/supabase'
+import HeroCarousel from '../componentes/HeroCarousel'
+import Navbar from '../componentes/Navbar'
 
-type Pelicula = {
-  id: string
-  titulo: string
-  fecha_estreno: string
-}
+export default function HomeScreen({ navigation }: any) {
 
-export default function HomeScreen() {
-  const [peliculas, setPeliculas] = useState<Pelicula[]>([])
-  const [loading, setLoading] = useState(true)
+  const [peliculas, setPeliculas] = useState<any[]>([])
 
   useEffect(() => {
     getPeliculas()
   }, [])
 
   const getPeliculas = async () => {
-    setLoading(true)
 
     const { data, error } = await supabase
       .from('peliculas')
       .select('*')
 
-    if (error) {
-      console.log('ERROR:', error.message)
-    } else {
+    if (!error) {
       setPeliculas(data || [])
     }
 
-    setLoading(false)
-  }
-
-  const logout = async () => {
-    await supabase.auth.signOut()
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text>Cargando películas...</Text>
-      </View>
-    )
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🎬 CineClub</Text>
 
-      <FlatList
-        data={peliculas}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>No hay películas aún</Text>}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.movieTitle}>{item.titulo}</Text>
-            <Text>Estreno: {item.fecha_estreno}</Text>
-          </View>
-        )}
+    <ScrollView style={styles.container}>
+
+      {/* NAVBAR */}
+      <Navbar navigation={navigation} />
+
+      {/* BUSCADOR */}
+      <TextInput
+        placeholder="Buscar películas..."
+        placeholderTextColor="#94a3b8"
+        style={styles.search}
       />
 
-      <Button title="Cerrar sesión" onPress={logout} />
-    </View>
+      {/* CARRUSEL */}
+      <HeroCarousel peliculas={peliculas} />
+
+      {/* CATEGORIAS */}
+      <Text style={styles.section}>
+        Categorías
+      </Text>
+
+      <View style={styles.categories}>
+
+        <TouchableOpacity style={styles.category}>
+          <Text style={styles.categoryText}>
+            Acción
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.category}>
+          <Text style={styles.categoryText}>
+            Drama
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.category}>
+          <Text style={styles.categoryText}>
+            Ciencia ficción
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+      {/* EXPLORAR */}
+      <Text style={styles.section}>
+        Explorar
+      </Text>
+
+      <TouchableOpacity
+        style={styles.bigButton}
+        onPress={() => navigation.navigate('Movies')}
+      >
+
+        <Text style={styles.bigButtonText}>
+          🎥 Ver Películas
+        </Text>
+
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.bigButton}>
+
+        <Text style={styles.bigButtonText}>
+          📺 Ver Series
+        </Text>
+
+      </TouchableOpacity>
+
+    </ScrollView>
+
   )
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#0f172a',
+    padding: 15,
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+
+  search: {
+    backgroundColor: '#1e293b',
+    padding: 15,
+    borderRadius: 15,
+    color: '#fff',
     marginBottom: 20,
   },
-  card: {
-    padding: 15,
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 10,
+
+  section: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
-  movieTitle: {
+
+  categories: {
+    flexDirection: 'row',
+    marginBottom: 25,
+  },
+
+  category: {
+    backgroundColor: '#1e293b',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+
+  categoryText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+
+  bigButton: {
+    backgroundColor: '#e11d48',
+    padding: 18,
+    borderRadius: 15,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+
+  bigButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
 })
