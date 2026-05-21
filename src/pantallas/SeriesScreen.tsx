@@ -1,33 +1,37 @@
-import React, { useEffect, useState } from 'react'
 import {
   View,
+  FlatList,
+  Image,
+  TouchableOpacity,
   Text,
   StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Image
+  ActivityIndicator
 } from 'react-native'
 
+import { useEffect, useState } from 'react'
+
 import { supabase } from '../servicios/supabase'
+import Navbar from '../componentes/Navbar'
 
 interface Serie {
   id: string
   titulo: string
   descripcion: string
-  imagenurl: string
-  fechaestreno: string
+  imagen: string
+  fecha_estreno: string
 }
 
 export default function SeriesScreen({ navigation }: any) {
+
   const [series, setSeries] = useState<Serie[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    obtenerSeries()
+    getSeries()
   }, [])
 
-  async function obtenerSeries() {
+  const getSeries = async () => {
+
     const { data, error } = await supabase
       .from('series')
       .select('*')
@@ -42,104 +46,86 @@ export default function SeriesScreen({ navigation }: any) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e50914" />
+        <ActivityIndicator
+          size="large"
+          color="#e11d48"
+        />
       </View>
     )
   }
 
   return (
+
     <View style={styles.container}>
-      <Text style={styles.title}>Series</Text>
+
+      <Navbar navigation={navigation} />
 
       <FlatList
         data={series}
+        numColumns={2}
         keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
+
           <TouchableOpacity
             style={styles.card}
             onPress={() =>
               navigation.navigate('SerieDetail', {
-                serieId: item.id
+                serieId: item.id,
               })
             }
           >
+
             <Image
-              source={{ uri: item.imagenurl }}
+              source={{ uri: item.imagen }}
               style={styles.image}
             />
 
-            <View style={styles.info}>
-              <Text style={styles.movieTitle}>
-                {item.titulo}
-              </Text>
+            <Text style={styles.title}>
+              {item.titulo}
+            </Text>
 
-              <Text style={styles.description} numberOfLines={2}>
-                {item.descripcion}
-              </Text>
-
-              <Text style={styles.date}>
-                {item.fechaestreno}
-              </Text>
-            </View>
           </TouchableOpacity>
+
         )}
       />
+
     </View>
+
   )
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    padding: 16
+    backgroundColor: '#0f172a',
+    padding: 10,
   },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212'
+    backgroundColor: '#0f172a',
+  },
+
+  card: {
+    flex: 1,
+    margin: 8,
+  },
+
+  image: {
+    width: '100%',
+    height: 240,
+    borderRadius: 15,
   },
 
   title: {
     color: '#fff',
-    fontSize: 28,
+    marginTop: 10,
     fontWeight: 'bold',
-    marginBottom: 20
+    fontSize: 15,
   },
 
-  card: {
-    flexDirection: 'row',
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    marginBottom: 16,
-    overflow: 'hidden'
-  },
-
-  image: {
-    width: 120,
-    height: 180
-  },
-
-  info: {
-    flex: 1,
-    padding: 12
-  },
-
-  movieTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8
-  },
-
-  description: {
-    color: '#bbb',
-    marginBottom: 8
-  },
-
-  date: {
-    color: '#888'
-  }
 })

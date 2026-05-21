@@ -1,11 +1,4 @@
-import {
-  View,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-} from 'react-native'
+import {View,FlatList,Image,TouchableOpacity,Text,StyleSheet} from 'react-native'
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../servicios/supabase'
