@@ -3,80 +3,127 @@ import {
   ImageBackground,
   Text,
   StyleSheet,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native'
 
 import Swiper from 'react-native-swiper'
 import { LinearGradient } from 'expo-linear-gradient'
 
+const { width } = Dimensions.get('window')
+
 export default function HeroCarousel({ peliculas }: any) {
 
-  // EVITAR ERROR SI NO HAY PELICULAS
   if (!peliculas || peliculas.length === 0) {
     return null
   }
 
   return (
+
     <View style={styles.container}>
 
       <Swiper
         autoplay
-        autoplayTimeout={4}
+        autoplayTimeout={7}
+        loop
         showsPagination
+
+        dotStyle={styles.dot}
+        activeDotStyle={styles.activeDot}
+
+        paginationStyle={{
+          bottom: 15,
+        }}
       >
 
         {peliculas.map((item: any) => (
 
-          <ImageBackground
+          <TouchableOpacity
             key={item.id}
-            source={{ uri: item.imagen }}
-            style={styles.slide}
+            activeOpacity={0.9}
+            style={styles.slideContainer}
           >
 
-            <LinearGradient
-              colors={['transparent', '#0f172a']}
-              style={styles.overlay}
+            <ImageBackground
+              source={{ uri: item.imagen }}
+              style={styles.slide}
+              imageStyle={styles.image}
             >
 
-              <Text style={styles.title}>
-                {item.titulo}
-              </Text>
+              <LinearGradient
+                colors={['transparent', 'rgba(15,23,42,0.95)']}
+                style={styles.overlay}
+              >
 
-            </LinearGradient>
+                <Text style={styles.title}>
+                  {item.titulo}
+                </Text>
 
-          </ImageBackground>
+              </LinearGradient>
+
+            </ImageBackground>
+
+          </TouchableOpacity>
 
         ))}
 
       </Swiper>
 
     </View>
+
   )
 }
 
 const styles = StyleSheet.create({
 
   container: {
-    height: 250,
+    width: '100%',
+    height: 320,
     borderRadius: 20,
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 25,
+  },
+
+  slideContainer: {
+    flex: 1,
   },
 
   slide: {
-    flex: 1,
+    width: width - 30,
+    height: 320,
     justifyContent: 'flex-end',
   },
 
+  image: {
+    borderRadius: 20,
+  },
+
   overlay: {
-    padding: 20,
-    height: '100%',
+    flex: 1,
     justifyContent: 'flex-end',
+    padding: 20,
   },
 
   title: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
+  },
+
+  dot: {
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    width: 8,
+    height: 8,
+    borderRadius: 5,
+    marginHorizontal: 3,
+  },
+
+  activeDot: {
+    backgroundColor: '#e11d48',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 3,
   },
 
 })

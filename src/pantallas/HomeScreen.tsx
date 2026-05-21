@@ -1,4 +1,11 @@
-import {View,Text,StyleSheet,TextInput,TouchableOpacity,ScrollView,} from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native'
 
 import { useEffect, useState } from 'react'
 
@@ -9,16 +16,41 @@ import Navbar from '../componentes/Navbar'
 export default function HomeScreen({ navigation }: any) {
 
   const [peliculas, setPeliculas] = useState<any[]>([])
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     getPeliculas()
   }, [])
 
+  // OBTENER PELICULAS
   const getPeliculas = async () => {
 
     const { data, error } = await supabase
       .from('peliculas')
       .select('*')
+
+    if (!error) {
+      setPeliculas(data || [])
+    }
+
+  }
+
+  // BUSCADOR
+  const buscarPeliculas = async (texto: string) => {
+
+    setSearch(texto)
+
+    // SI ESTÁ VACÍO
+    if (texto.trim() === '') {
+      getPeliculas()
+      return
+    }
+
+    // BUSCAR EN SUPABASE
+    const { data, error } = await supabase
+      .from('peliculas')
+      .select('*')
+      .ilike('titulo', `%${texto}%`)
 
     if (!error) {
       setPeliculas(data || [])
@@ -38,66 +70,88 @@ export default function HomeScreen({ navigation }: any) {
         placeholder="Buscar películas..."
         placeholderTextColor="#94a3b8"
         style={styles.search}
+        value={search}
+        onChangeText={buscarPeliculas}
       />
 
-      {/* CARRUSEL */}
-      <HeroCarousel peliculas={peliculas} />
+      {/* RESULTADOS BÚSQUEDA */}
+      {search !== '' ? (
 
-      {/* CATEGORIAS */}
-      <Text style={styles.section}>
-        Categorías
-      </Text>
+        <View style={styles.results}>
 
-      <View style={styles.categories}>
-
-        <TouchableOpacity style={styles.category}>
-          <Text style={styles.categoryText}>
-            Acción
+          <Text style={styles.resultTitle}>
+            Resultados
           </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.category}>
-          <Text style={styles.categoryText}>
-            Drama
+          {peliculas.length > 0 ? (
+
+            peliculas.map((item) => (
+
+              <TouchableOpacity
+                key={item.id}
+                style={styles.resultCard}
+                onPress={() =>
+                  navigation.navigate('MovieDetail', {
+                    pelicula: item,
+                  })
+                }
+              >
+
+                <Text style={styles.resultText}>
+                  🎬 {item.titulo}
+                </Text>
+
+              </TouchableOpacity>
+
+            ))
+
+          ) : (
+
+            <Text style={styles.noResults}>
+              No se encontraron películas
+            </Text>
+
+          )}
+
+        </View>
+
+      ) : (
+
+        <>
+          {/* CARRUSEL */}
+          <HeroCarousel peliculas={peliculas} />
+
+          {/* EXPLORAR */}
+          <Text style={styles.section}>
+            Explorar
           </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.category}>
-          <Text style={styles.categoryText}>
-            Ciencia ficción
-          </Text>
-        </TouchableOpacity>
+          {/* BOTÓN PELÍCULAS */}
+          <TouchableOpacity
+            style={styles.bigButton}
+            onPress={() => navigation.navigate('Movies')}
+          >
 
-      </View>
+            <Text style={styles.bigButtonText}>
+              🎥 Ver Películas
+            </Text>
 
-      {/* EXPLORAR */}
-      <Text style={styles.section}>
-        Explorar
-      </Text>
+          </TouchableOpacity>
 
-      {/* BOTÓN PELÍCULAS */}
-      <TouchableOpacity
-        style={styles.bigButton}
-        onPress={() => navigation.navigate('Movies')}
-      >
+          {/* BOTÓN SERIES */}
+          <TouchableOpacity
+            style={styles.bigButton}
+            onPress={() => navigation.navigate('Series')}
+          >
 
-        <Text style={styles.bigButtonText}>
-          🎥 Ver Películas
-        </Text>
+            <Text style={styles.bigButtonText}>
+              📺 Ver Series
+            </Text>
 
-      </TouchableOpacity>
+          </TouchableOpacity>
 
-      {/* BOTÓN SERIES */}
-      <TouchableOpacity
-        style={styles.bigButton}
-        onPress={() => navigation.navigate('Series')}
-      >
-
-        <Text style={styles.bigButtonText}>
-          📺 Ver Series
-        </Text>
-
-      </TouchableOpacity>
+        </>
+      )}
 
     </ScrollView>
 
@@ -127,26 +181,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 
-  categories: {
-    flexDirection: 'row',
-    marginBottom: 25,
-    flexWrap: 'wrap',
-  },
-
-  category: {
-    backgroundColor: '#1e293b',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-
-  categoryText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-
   bigButton: {
     backgroundColor: '#e11d48',
     padding: 18,
@@ -159,6 +193,36 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+
+  results: {
+    marginTop: 5,
+  },
+
+  resultTitle: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
+  resultCard: {
+    backgroundColor: '#1e293b',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+
+  resultText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+
+  noResults: {
+    color: '#94a3b8',
+    marginTop: 10,
+    fontSize: 16,
   },
 
 })

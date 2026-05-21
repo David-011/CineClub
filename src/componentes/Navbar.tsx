@@ -22,6 +22,7 @@ export default function Navbar({ navigation }: any) {
         style={styles.logoContainer}
         onPress={() => navigation.navigate('Home')}
       >
+
         <Image
           source={require('../../assets/logo.png')}
           style={styles.logo}
@@ -30,31 +31,45 @@ export default function Navbar({ navigation }: any) {
         <Text style={styles.logoText}>
           CineClub
         </Text>
+
       </TouchableOpacity>
 
       {/* MENU */}
       <View style={styles.menu}>
+
+        {/* PELICULAS */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Movies')}
         >
+
           <Text style={styles.link}>
             Películas
           </Text>
+
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        {/* SERIES */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Series')}
+        >
+
           <Text style={styles.link}>
             Series
           </Text>
+
         </TouchableOpacity>
 
+        {/* LOGOUT */}
         <TouchableOpacity
           onPress={logout}
         >
+
           <Text style={styles.logout}>
             Logout
           </Text>
+
         </TouchableOpacity>
+
       </View>
 
     </View>
@@ -62,6 +77,7 @@ export default function Navbar({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
+
   container: {
     marginTop: 15,
     marginBottom: 25,
@@ -102,4 +118,5 @@ const styles = StyleSheet.create({
     color: '#e11d48',
     fontWeight: 'bold',
   },
+
 })
